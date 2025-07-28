@@ -1,22 +1,29 @@
 import { useNotes, useNotesDispatch } from "../context/NotesContext";
+import { NewNote } from "../types/Notes";
 
-function NoteList({ sortBy }) {
+type NoteItemProps = {
+  note: NewNote;
+};
+type SortByType = { sortBy: "latest" | "earliest" | "completed" };
+function NoteList({ sortBy }: SortByType) {
   const notes = useNotes();
-
   let sortedNotes = notes;
+
   if (sortBy === "earliest")
     sortedNotes = [...notes].sort(
-      (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     ); // a -b  => a > b ? 1 : -1
 
   if (sortBy === "latest")
     sortedNotes = [...notes].sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     ); // b -a  => a > b ? -1 : 1
 
   if (sortBy === "completed")
     sortedNotes = [...notes].sort(
-      (a, b) => Number(a.completed) - Number(b.completed)
+      (a, b) => Number(b.completed) - Number(a.completed)
     );
 
   return (
@@ -30,17 +37,20 @@ function NoteList({ sortBy }) {
 
 export default NoteList;
 
-function NoteItem({ note }) {
+function NoteItem({ note }: NoteItemProps) {
   const dispatch = useNotesDispatch();
-
-  const options = {
+  console.log(note);
+  const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "long",
     day: "numeric",
   };
 
   return (
-    <div data-testid="note-item" className={`note-item ${note.completed ? "completed" : ""}`}>
+    <div
+      data-testid="note-item"
+      className={`note-item ${note.completed ? "completed" : ""}`}
+    >
       <div className="note-item__header">
         <div>
           <p className="title">{note.title}</p>
@@ -54,8 +64,8 @@ function NoteItem({ note }) {
           </button>
           <input
             type="checkbox"
-            name={note.id}
-            id={note.id}
+            name={String(note.id)}
+            id={String(note.id)}
             value={note.id}
             checked={note.completed}
             onChange={(e) => {

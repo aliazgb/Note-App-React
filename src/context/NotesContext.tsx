@@ -1,9 +1,24 @@
-import { createContext, useContext, useReducer } from "react";
+import React, { createContext, useContext, useReducer } from "react";
 
-const NotesContext = createContext(null);
-const NotesDispatchContext = createContext(null);
+type NewNote = {
+  title: string;
+  description: string;
+  id: number;
+  completed: boolean;
+  createdAt: string;
+};
+type NotesContextType = NewNote[];
+type NotesDispatchContextType = React.Dispatch<Action>;
 
-function notesReducer(notes, action) {
+const NotesContext = createContext({} as NotesContextType);
+const NotesDispatchContext = createContext({} as NotesDispatchContextType);
+
+type Action =
+  | { type: "add"; payload: NewNote }
+  | { type: "delete"; payload: number }
+  | { type: "complete"; payload: number };
+
+function notesReducer(notes: NewNote[], action: Action) {
   switch (action.type) {
     case "add": {
       return [...notes, action.payload];
@@ -19,11 +34,15 @@ function notesReducer(notes, action) {
       );
     }
     default:
-      throw new Error("unknown action" + action.type);
+      throw new Error("unknown action" + action);
   }
 }
 
-export function NotesProvider({ children }) {
+type Props = {
+  children: React.ReactNode;
+};
+
+export function NotesProvider({ children }: Props) {
   const [notes, dispatch] = useReducer(notesReducer, []);
   return (
     <NotesContext.Provider value={notes}>

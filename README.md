@@ -1,6 +1,6 @@
 # Note App (React)
 
-A simple note-taking app built with React and Context API.  
+A simple note-taking app built with React + TypeScript and Context API.  
 Created as a practice project for learning  testing with Vitest and React Testing Library.
 
 ## Features
